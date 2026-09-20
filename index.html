@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מכירת תכולת דירה בראשון לציון</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Heebo', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 120px; }
+        header { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; padding: 2.5rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        .promo-banner { background-color: #fef3c7; border: 1px solid #f59e0b; color: #92400e; text-align: center; padding: 12px; font-weight: 500; font-size: 1.05rem; margin: 1.5rem auto; max-width: 800px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .filters { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0; }
+        .filter-btn { background: white; border: 1px solid var(--border); padding: 0.5rem 1.2rem; border-radius: 30px; cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; color: var(--text-light); }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); }
+        
+        .card.sold-card { opacity: 0.85; background: #f1f5f9; }
+        .sold-badge-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.45); display: flex; justify-content: center; align-items: center; z-index: 15; pointer-events: none; }
+        .sold-stamp { background: #ef4444; color: white; font-size: 2rem; font-weight: 800; padding: 0.5rem 2rem; border-radius: 8px; transform: rotate(-15deg); box-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: 2px; }
+
+        .card-img-container { width: 100%; height: 180px; background: #e2e8f0; position: relative; overflow: hidden; cursor: pointer; }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .card-img-container:hover img { transform: scale(1.03); }
+        
+        .no-image { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); font-size: 0.9rem; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.85); color: var(--text); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; transition: background 0.2s; }
+        .slider-btn:hover { background: white; }
+        .slider-btn.prev { right: 8px; }
+        .slider-btn.next { left: 8px; }
+        .img-counter { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; padding: 2px 8px; font-size: 0.75rem; border-radius: 12px; z-index: 10; }
+        
+        /* Lightbox Modal Styles */
+        .lightbox-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.88); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1.5rem; }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; }
+        .lightbox-image-wrapper { position: relative; display: flex; justify-content: center; align-items: center; max-width: 85vw; max-height: 75vh; }
+        .lightbox-content img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .lightbox-close { position: absolute; top: -45px; left: 0; background: none; border: none; color: white; font-size: 2.2rem; cursor: pointer; padding: 5px; z-index: 10020; }
+        .lightbox-caption { color: white; margin-top: 1rem; font-size: 1.2rem; font-weight: 700; text-align: center; }
+        .lightbox-counter { color: #94a3b8; margin-top: 0.3rem; font-size: 0.95rem; }
+        
+        .lightbox-slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.9); color: var(--text); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10010; transition: all 0.2s; }
+        .lightbox-slider-btn:hover { background: white; transform: translateY(-50%) scale(1.05); }
+        .lightbox-slider-btn.prev { right: -65px; }
+        .lightbox-slider-btn.next { left: -65px; }
+
+        .card-content { padding: 1.25rem; }
+        .room-badge { display: inline-block; background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 20px; margin-bottom: 0.75rem; }
+        .item-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .item-dimensions { font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0.8rem; }
+        .item-price { font-size: 1.1rem; color: var(--primary); font-weight: 700; margin-bottom: 1rem; }
+        .card-footer { padding: 0 1.25rem 1.25rem 1.25rem; }
+        .select-btn { width: 100%; background: white; color: var(--primary); border: 2px solid var(--primary); padding: 0.6rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .select-btn:hover { background: var(--primary); color: white; }
+        .select-btn.sold-btn { background: #e2e8f0; border-color: #cbd5e1; color: #64748b; cursor: not-allowed; }
+        .card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+        .quantity-selector { display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 2px solid var(--accent); border-radius: 8px; padding: 0.3rem 0.5rem; }
+        .qty-btn { background: white; border: 1px solid var(--accent); border-radius: 4px; width: 30px; height: 30px; font-size: 1.2rem; font-weight: bold; color: var(--accent); cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .qty-btn:hover:not(:disabled) { background: var(--accent); color: white; }
+        .qty-btn:disabled { border-color: #cbd5e1; color: #cbd5e1; cursor: not-allowed; }
+        .qty-text { font-weight: 700; font-size: 1rem; color: var(--text); }
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 1rem 2rem; box-shadow: 0 -4px 10px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; z-index: 1000; max-width: 900px; margin: 0 auto; border-radius: 16px 16px 0 0; }
+        .cart-info { font-size: 1rem; font-weight: 500; display: flex; align-items: center; gap: 15px; }
+        .cart-actions { display: flex; gap: 10px; align-items: center; }
+        .view-cart-btn { background: var(--primary); color: white; border: none; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+        .whatsapp-btn { background: #25d366; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .cart-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 1rem; }
+        .cart-modal-overlay.active { display: flex; }
+        .cart-modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .cart-modal-header { padding: 1.25rem 1.5rem; background: #f1f5f9; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .close-modal-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+        .cart-modal-body { padding: 1.5rem; overflow-y: auto; flex-grow: 1; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .cart-item-info h4 { font-size: 1rem; font-weight: 600; }
+        .cart-item-info span { font-size: 0.8rem; color: var(--text-light); }
+        .cart-item-right { display: flex; align-items: center; gap: 1rem; }
+        .cart-item-price { font-weight: 700; color: var(--primary); }
+        .remove-item-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        .cart-modal-footer { padding: 1.25rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border); }
+        .cart-pricing-summary { margin-bottom: 1rem; font-size: 1.05rem; }
+        .price-line { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+        .price-line.total { font-size: 1.25rem; font-weight: 700; color: var(--primary); border-top: 2px dashed var(--border); padding-top: 0.5rem; margin-top: 0.5rem; }
+        .old-price { text-decoration: line-through; color: var(--text-light); margin-left: 8px; }
+        .discount-tag { background: #d1fae5; color: #065f46; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .lightbox-slider-btn.prev { right: 5px; }
+            .lightbox-slider-btn.next { left: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>מכירת תכולת דירה בראשון לציון</h1>
+        <p>בוחרים יותר פריטים ומשלמים פחות!</p>
+    </header>
+
+    <div class="container">
+        <div class="promo-banner">
+            🎁 מבצע באנדלים מיוחד: <strong>2 פריטים = 10% הנחה</strong> | <strong>3 פריטים = 20% הנחה</strong> | <strong>5 פריטים ומעלה = 40% הנחה!</strong>
+        </div>
+
+        <div class="filters" id="room-filters">
+            <button class="filter-btn active" data-room="all">הכל</button>
+        </div>
+
+        <div class="grid" id="items-grid"></div>
+    </div>
+
+    <!-- Lightbox Modal for Image Zoom with Slider -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox(true)">&times;</button>
+            <div class="lightbox-image-wrapper">
+                <img id="lightbox-img" src="" alt="תמונה מוגדלת">
+                <button id="lightbox-prev-btn" class="lightbox-slider-btn prev" onclick="changeLightboxImage(-1)">&#10095;</button>
+                <button id="lightbox-next-btn" class="lightbox-slider-btn next" onclick="changeLightboxImage(1)">&#10094;</button>
+            </div>
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+            <div class="lightbox-counter" id="lightbox-counter"></div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Bar -->
+    <div class="cart-bar" id="cart-bar">
+        <div class="cart-info" id="cart-bar-text">
+            נבחרו <span>0</span> פריטים | סה"כ: <span>₪0</span>
+        </div>
+        <div class="cart-actions">
+            <button class="view-cart-btn" onclick="toggleCartModal(true)">🛒 צפה בסל הקניות</button>
+            <button class="whatsapp-btn" onclick="sendToWhatsApp()">💬 שליחה בוואטסאפ</button>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal-overlay" id="cart-modal" onclick="handleModalClick(event)">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <h2>סל הקניות והבאנדל שלך</h2>
+                <button class="close-modal-btn" onclick="toggleCartModal(false)">&times;</button>
+            </div>
+            <div class="cart-modal-body" id="cart-modal-items-list"></div>
+            <div class="cart-modal-footer" id="cart-modal-footer"></div>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            { id: 1, room: "חדר שינה", name: "מיטה זוגית", price: 700, images: ["מיטה 1.jpeg", "מיטה 2.jpeg"], maxQuantity: 1 },
+            { id: 2, room: "חדר שינה", name: "שידות לילה", price: 75, images: ["שידה ליד המיטה.jpeg", "שידה ליד המיטה 2.jpeg"], maxQuantity: 2 },
+            { id: 3, room: "מטבח", name: "מדיח כלים", price: 200, images: ["מדיח כלים 1.jpeg", "מדיח כלים 2.jpeg"], maxQuantity: 1 },
+            { id: 4, room: "מטבח", name: "מיקרוגל", price: 75, images: ["מיקרוגל (כולל מכסה לחימום).jpeg"], maxQuantity: 1 },
+            { id: 18, room: "מטבח", name: "פח אוטומטי", price: 200, images: ["פח אוטומטי.jpeg"], maxQuantity: 1, sold: true },
+            { id: 5, room: "חדר עבודה", name: "כסא מחשב לבן", price: 100, images: ["כסא מחשב לבן.jpeg"], maxQuantity: 1 },
+            { id: 6, room: "חדר עבודה", name: "כסא מחשב שחור", price: 100, images: ["כסא מחשב שחור.jpeg"], maxQuantity: 1 },
+            { id: 7, room: "חדר עבודה", name: "מזגן נייד", price: 100, images: ["מזגן נייד.jpeg"], maxQuantity: 1 },
+            { id: 8, room: "חדר עבודה", name: "שולחן מחשב", price: 150, images: ["שולחן מחשב.jpeg"], maxQuantity: 2, dimensions: "רוחב 120 | עומק 60" },
+            { id: 9, room: "חדר עבודה", name: "מסך מחשב", price: 200, images: ["מסך מחשב.jpg"], maxQuantity: 1, dimensions: "20 אינץ'" },
+            { id: 10, room: "חדר עבודה", name: "ספרייה", price: 150, images: ["ספרייה.jpeg"], maxQuantity: 1 },
+            { id: 11, room: "ילדים", name: "מיטת מעבר", price: 100, images: ["מיטת מעבר.jpeg"], maxQuantity: 1 },
+            { id: 12, room: "סלון ומרפסת", name: "שטיח", price: 150, images: ["שטיח.jpg"], maxQuantity: 1, dimensions: "210x160 ס\"מ" },
+            { id: 13, room: "מטבח", name: "כסא לבן לשולחן אוכל (כולל כיסוי)", price: 25, images: ["כסא לבן לשולחן אוכל כולל כיסוי.jpeg"], maxQuantity: 4 },
+            { id: 14, room: "מטבח", name: "תמי 4", price: 150, images: ["תמי 4.jpeg"], maxQuantity: 1 },
+            { id: 15, room: "סלון ומרפסת", name: "כורסא צהובה", price: 200, images: ["כורסא צהובה.jpeg"], maxQuantity: 1 },
+            { id: 19, room: "סלון ומרפסת", name: "מאוורר מגדל", price: 150, images: ["מאוורר מגדל.jpeg"], maxQuantity: 1, sold: true },
+            { id: 16, room: "סלון ומרפסת", name: "כוננית לסלון", price: 300, images: ["כוננית לסלון.jpeg"], maxQuantity: 1, dimensions: "רוחב 180 | עומק 42 | גובה 76" },
+            { id: 17, room: "סלון ומרפסת", name: "תנור ספירלה", price: 120, images: ["תנור ספירלה.jpeg"], maxQuantity: 1 },
+            { id: 20, room: "סלון ומרפסת", name: "פינת ישיבה מודולרית למרפסת", price: 850, images: ["פינת ישיבה מודולרית למרפסת.jpeg"], maxQuantity: 1, sold: true }
+        ];
+
+        let selectedItems = new Map();
+        let currentImageIndices = {};
+        
+        let lightboxCurrentItemId = null;
+        let lightboxCurrentIndex = 0;
+
+        function init() {
+            setupFilters();
+            renderItems('all');
+            updateCartSummary();
+        }
+
+        function setupFilters() {
+            const rooms = ['all', ...new Set(items.map(item => item.room))];
+            const filtersContainer = document.getElementById('room-filters');
+            filtersContainer.innerHTML = '';
+
+            rooms.forEach(room => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn ${room === 'all' ? 'active' : ''}`;
+                btn.textContent = room === 'all' ? 'הכל' : room;
+                btn.onclick = () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderItems(room);
+                };
+                filtersContainer.appendChild(btn);
+            });
+        }
+        
+        function changeImage(event, id, direction) {
+            event.stopPropagation();
+            const item = items.find(i => i.id === id);
+            const itemImages = item.images || [];
+            
+            if (currentImageIndices[id] === undefined) currentImageIndices[id] = 0;
+            currentImageIndices[id] += direction;
+            
+            if (currentImageIndices[id] >= itemImages.length) {
+                currentImageIndices[id] = 0;
+            } else if (currentImageIndices[id] < 0) {
+                currentImageIndices[id] = itemImages.length - 1;
+            }
+            
+            const imgElement = document.getElementById(`img-${id}`);
+            const counterElement = document.getElementById(`counter-${id}`);
+            if (imgElement) imgElement.src = itemImages[currentImageIndices[id]];
+            if (counterElement) counterElement.textContent = `${currentImageIndices[id] + 1}/${itemImages.length}`;
+        }
+
+        function openLightbox(id) {
+            const item = items.find(i => i.id === id);
+            const itemImages = item.images || [];
+            if (itemImages.length === 0 || !itemImages[0]) return;
+
+            lightboxCurrentItemId = id;
+            lightboxCurrentIndex = currentImageIndices[id] || 0;
+            updateLightboxView();
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function updateLightboxView() {
+            const item = items.find(i => i.id === lightboxCurrentItemId);
+            const itemImages = item.images || [];
+            
+            document.getElementById('lightbox-img').src = itemImages[lightboxCurrentIndex];
+            document.getElementById('lightbox-caption').textContent = item.name;
+            
+            const counter = document.getElementById('lightbox-counter');
+            const prevBtn = document.getElementById('lightbox-prev-btn');
+            const nextBtn = document.getElementById('lightbox-next-btn');
+
+            if (itemImages.length > 1) {
+                counter.textContent = `תמונה ${lightboxCurrentIndex + 1} מתוך ${itemImages.length}`;
+                counter.style.display = 'block';
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            } else {
+                counter.style.display = 'none';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function changeLightboxImage(direction) {
+            const item = items.find(i => i.id === lightboxCurrentItemId);
+            const itemImages = item.images || [];
+            
+            lightboxCurrentIndex += direction;
+            if (lightboxCurrentIndex >= itemImages.length) {
+                lightboxCurrentIndex = 0;
+            } else if (lightboxCurrentIndex < 0) {
+                lightboxCurrentIndex = itemImages.length - 1;
+            }
+            
+            currentImageIndices[lightboxCurrentItemId] = lightboxCurrentIndex;
+            const mainImg = document.getElementById(`img-${lightboxCurrentItemId}`);
+            const mainCounter = document.getElementById(`counter-${lightboxCurrentItemId}`);
+            if (mainImg) mainImg.src = itemImages[lightboxCurrentIndex];
+            if (mainCounter) mainCounter.textContent = `${lightboxCurrentIndex + 1}/${itemImages.length}`;
+
+            updateLightboxView();
+        }
+
+        function closeLightbox(event) {
+            if (event === true || event.target === document.getElementById('lightbox')) {
+                document.getElementById('lightbox').classList.remove('active');
+            }
+        }
+
+        function renderItems(roomFilter) {
+            const grid = document.getElementById('items-grid');
+            grid.innerHTML = '';
+
+            const filtered = roomFilter === 'all' ? items : items.filter(i => i.room === roomFilter);
+
+            filtered.forEach(item => {
+                const qty = selectedItems.get(item.id) || 0;
+                const isSelected = qty > 0;
+                const card = document.createElement('div');
+                card.className = `card ${isSelected ? 'selected' : ''} ${item.sold ? 'sold-card' : ''}`;
+
+                const priceDisplay = item.price !== null ? `₪${item.price}` : 'מחיר בתיאום';
+                
+                let imageHtml = '';
+                const itemImages = item.images || [];
+                
+                if (currentImageIndices[item.id] === undefined) {
+                    currentImageIndices[item.id] = 0;
+                }
+                const currentIndex = currentImageIndices[item.id];
+
+                let soldOverlayHtml = item.sold ? `
+                    <div class="sold-badge-overlay">
+                        <div class="sold-stamp">נמכר</div>
+                    </div>
+                ` : '';
+
+                if (itemImages.length > 1) {
+                    imageHtml = `
+                        <div class="card-img-container" onclick="openLightbox(${item.id})">
+                            <img id="img-${item.id}" src="${itemImages[currentIndex]}" alt="${item.name}">
+                            <button class="slider-btn prev" onclick="changeImage(event, ${item.id}, -1)">&#10095;</button>
+                            <button class="slider-btn next" onclick="changeImage(event, ${item.id}, 1)">&#10094;</button>
+                            <div class="img-counter" id="counter-${item.id}">${currentIndex + 1}/${itemImages.length}</div>
+                            ${soldOverlayHtml}
+                        </div>
+                    `;
+                } else if (itemImages.length === 1 && itemImages[0] !== "") {
+                    imageHtml = `
+                        <div class="card-img-container" onclick="openLightbox(${item.id})">
+                            <img id="img-${item.id}" src="${itemImages[0]}" alt="${item.name}">
+                            ${soldOverlayHtml}
+                        </div>
+                    `;
+                } else {
+                    imageHtml = `
+                        <div class="card-img-container">
+                            <div class="no-image">אין תמונה</div>
+                            ${soldOverlayHtml}
+                        </div>
+                    `;
+                }
+
+                let dimensionsHtml = item.dimensions ? `<div class="item-dimensions">📏 ${item.dimensions}</div>` : '';
+
+                let footerHtml = '';
+                if (item.sold) {
+                    footerHtml = `<button class="select-btn sold-btn" disabled>נמכר</button>`;
+                } else if (isSelected) {
+                    if ((item.maxQuantity || 1) > 1) {
+                        footerHtml = `
+                            <div class="quantity-selector">
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                <span class="qty-text">${qty} מתוך ${item.maxQuantity}</span>
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)" ${qty >= item.maxQuantity ? 'disabled' : ''}>+</button>
+                            </div>
+                        `;
+                    } else {
+                        footerHtml = `
+                            <button class="select-btn" style="background: var(--accent); border-color: var(--accent); color: white;" onclick="updateQuantity(${item.id}, -1)">
+                                ✓ נבחר (לחץ להסרה)
+                            </button>
+                        `;
+                    }
+                } else {
+                    footerHtml = `<button class="select-btn" onclick="updateQuantity(${item.id}, 1)">+ הוסף</button>`;
+                }
+
+                card.innerHTML = `
+                    ${imageHtml}
+                    <div class="card-content">
+                        <span class="room-badge">${item.room}</span>
+                        <div class="item-title">${item.name}</div>
+                        ${dimensionsHtml}
+                        <div class="item-price">${priceDisplay}</div>
+                    </div>
+                    <div class="card-footer">${footerHtml}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function updateQuantity(id, delta) {
+            let item = items.find(i => i.id === id);
+            if (item.sold) return;
+
+            let current = selectedItems.get(id) || 0;
+            let next = current + delta;
+            
+            if (next < 0) next = 0;
+            if (next > (item.maxQuantity || 1)) next = item.maxQuantity || 1;
+            
+            if (next === 0) selectedItems.delete(id);
+            else selectedItems.set(id, next);
+            
+            const activeRoom = document.querySelector('.filter-btn.active').textContent;
+            renderItems(activeRoom === 'הכל' ? 'all' : activeRoom);
+            updateCartSummary();
+        }
+
+        function calculateCart() {
+            let count = 0;
+            let subtotal = 0;
+
+            selectedItems.forEach((qty, id) => {
+                const item = items.find(i => i.id === id);
+                count += qty;
+                if (item.price !== null) subtotal += item.price * qty;
+            });
+
+            let discountPercent = 0;
+            if (count >= 5) discountPercent = 40;
+            else if (count >= 3) discountPercent = 20;
+            else if (count === 2) discountPercent = 10;
+
+            let discountAmount = (subtotal * discountPercent) / 100;
+            let finalPrice = subtotal - discountAmount;
+
+            return { count, subtotal, discountPercent, discountAmount, finalPrice };
+        }
+
+        function updateCartSummary() {
+            const cart = calculateCart();
+            let text = `נבחרו <span>${cart.count}</span> פריטים`;
+            if (cart.subtotal > 0) {
+                if (cart.discountPercent > 0) {
+                    text += ` | סה"כ: <span class="old-price">₪${cart.subtotal}</span> <span class="discount-tag">-${cart.discountPercent}%</span> <span>₪${cart.finalPrice}</span>`;
+                } else {
+                    text += ` | סה"כ: <span>₪${cart.subtotal}</span>`;
+                }
+            }
+            document.getElementById('cart-bar-text').innerHTML = text;
+            renderCartModalContent();
+        }
+
+        function renderCartModalContent() {
+            const listContainer = document.getElementById('cart-modal-items-list');
+            const footerContainer = document.getElementById('cart-modal-footer');
+            
+            if (selectedItems.size === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">הסל שלך ריק כרגע. בחר פריטים מהרשימה!</p>';
+                footerContainer.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            selectedItems.forEach((qty, id) => {
+                const item = items.find(i => i.id === id);
+                const priceStr = item.price !== null ? `₪${item.price * qty}` : 'מחיר בתיאום';
+                const qtyStr = qty > 1 ? ` (x${qty})` : '';
+                html += `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">
+                            <h4>${item.name}${qtyStr}</h4>
+                            <span>${item.room}</span>
+                        </div>
+                        <div class="cart-item-right">
+                            <span class="cart-item-price">${priceStr}</span>
+                            <button class="remove-item-btn" onclick="updateQuantity(${item.id}, -${qty})">הסר</button>
+                        </div>
+                    </div>
+                `;
+            });
+            listContainer.innerHTML = html;
+
+            const cart = calculateCart();
+            let footerHtml = `
+                <div class="cart-pricing-summary">
+                    <div class="price-line"><span>כמות פריטים:</span><span><strong>${cart.count}</strong></span></div>
+            `;
+            if (cart.subtotal > 0) {
+                footerHtml += `<div class="price-line"><span>סכום ביניים:</span><span>₪${cart.subtotal}</span></div>`;
+                if (cart.discountPercent > 0) {
+                    footerHtml += `
+                        <div class="price-line" style="color: var(--accent);"><span>הנחת באנדל (${cart.discountPercent}%):</span><span>-₪${cart.discountAmount}</span></div>
+                        <div class="price-line total"><span>מחיר סופי משוער:</span><span>₪${cart.finalPrice}</span></div>
+                    `;
+                } else {
+                    footerHtml += `<div class="price-line total"><span>מחיר סופי:</span><span>₪${cart.subtotal}</span></div>`;
+                }
+            }
+            footerHtml += `</div>
+                <button class="whatsapp-btn" style="width: 100%; justify-content: center;" onclick="sendToWhatsApp()">💬 שליחת ההזמנה בוואטסאפ</button>`;
+            footerContainer.innerHTML = footerHtml;
+        }
+
+        function toggleCartModal(show) {
+            const modal = document.getElementById('cart-modal');
+            if (show) modal.classList.add('active');
+            else modal.classList.remove('active');
+        }
+
+        function handleModalClick(event) {
+            if (event.target === document.getElementById('cart-modal')) toggleCartModal(false);
+        }
+
+        function sendToWhatsApp() {
+            if (selectedItems.size === 0) {
+                alert('אנא בחר לפחות פריט אחד לפני שליחה בוואטסאפ.');
+                return;
+            }
+
+            let text = "היי! בחרתי את הפריטים הבאים מתוך האתר לתכולת הדירה:\n\n";
+            let subtotal = 0;
+            let count = 0;
+            let itemIndex = 1;
+
+            selectedItems.forEach((qty, id) => {
+                const item = items.find(i => i.id === id);
+                count += qty;
+                const qtyStr = qty > 1 ? ` (כמות: ${qty})` : '';
+                if (item.price !== null) {
+                    text += `${itemIndex}. ${item.name} (${item.room})${qtyStr} - ₪${item.price * qty}\n`;
+                    subtotal += item.price * qty;
+                } else {
+                    text += `${itemIndex}. ${item.name} (${item.room})${qtyStr} - מחיר בתיאום\n`;
+                }
+                itemIndex++;
+            });
+
+            let discountPercent = 0;
+            if (count >= 5) discountPercent = 40;
+            else if (count >= 3) discountPercent = 20;
+            else if (count === 2) discountPercent = 10;
+
+            let discountAmount = (subtotal * discountPercent) / 100;
+            let finalPrice = subtotal - discountAmount;
+
+            text += `\nסה"כ פריטים: ${count}`;
+            if (subtotal > 0) {
+                text += `\nסכום ביניים: ₪${subtotal}`;
+                if (discountPercent > 0) {
+                    text += `\nהנחת באנדל (${discountPercent}%): -₪${discountAmount}`;
+                    text += `\nמחיר סופי משוער: ₪${finalPrice}`;
+                } else {
+                    text += `\nמחיר סופי: ₪${subtotal}`;
+                }
+            }
+            text += `\n\nאשמח לפרטים נוספים!`;
+
+            const phone = "972542101373"; 
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
