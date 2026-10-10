@@ -172,11 +172,10 @@
     <script>
         const items = [
             { id: 1, room: "חדר שינה", name: "מיטה זוגית", price: 700, images: ["מיטה 1.jpeg", "מיטה 2.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
-            { id: 26, room: "חדר שינה", name: "מראה", price: 120, images: ["מראה.jpeg"], maxQuantity: 1, dimensions: "גובה 103 | רוחב 55 סמ", pickup: "איסוף החל מ-26.10.26" },
+            { id: 26, room: "חדר שינה", name: "מראה", price: 120, images: ["מראה.jpeg"], maxQuantity: 1, dimensions: "גובה 103 | רוחב 55 סמ", pickup: "איסוף מיידי"},
             { id: 3, room: "מטבח", name: "מדיח כלים", price: 200, images: ["מדיח כלים 1.jpeg", "מדיח כלים 2.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 4, room: "מטבח", name: "מיקרוגל", price: 75, images: ["מיקרוגל (כולל מכסה לחימום).jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 9, room: "חדר עבודה", name: "מסך מחשב", price: 200, images: ["מסך מחשב.jpg"], maxQuantity: 1, dimensions: "20 אינץ", pickup: "איסוף החל מ-26.10.26" },
-            { id: 10, room: "חדר עבודה", name: "ספרייה", price: 150, images: ["ספרייה.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 11, room: "ילדים", name: "מיטת מעבר", price: 100, images: ["מיטת מעבר.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 21, room: "ילדים", name: "מיטת תינוק", price: 750, images: ["מיטת תינוק 1.jpeg", "מיטת תינוק 2.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 22, room: "ילדים", name: "שידת החתלה", price: 750, images: ["שידת החתלה 1.jpeg", "שידת החתלה 2.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
@@ -187,11 +186,11 @@
             { id: 24, room: "סלון ומרפסת", name: "ספה נפתחת", price: 500, images: ["ספה נפתחת.jpeg", "ספה נפתחת 2.jpeg"], maxQuantity: 1, dimensions: "90x190 סמ כספה | 150x190 סמ כמיטה", pickup: "איסוף מיידי" },
             { id: 27, room: "סלון ומרפסת", name: "שואב שוטף Dreame", price: 700, images: ["שואב שוטף 1.jpeg", "שואב שוטף 2.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
             { id: 16, room: "סלון ומרפסת", name: "כוננית לסלון", price: 300, images: ["כוננית לסלון.jpeg"], maxQuantity: 1, dimensions: "רוחב 180 | עומק 42 | גובה 76", pickup: "איסוף החל מ-26.10.26" },
-            { id: 17, room: "סלון ומרפסת", name: "תנור ספירלה", price: 120, images: ["תנור ספירלה.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
+            { id: 17, room: "סלון ומרפסת", name: "רדיאטור", price: 120, images: ["תנור ספירלה.jpeg"], maxQuantity: 1, pickup: "איסוף מיידי"},
             { id: 25, room: "שונות", name: "דגם דמוי לגו - מגדל סאורון (שר הטבעות)", price: 150, images: ["לגו שר הטבעות - קדימה.jpeg", "לגו שר הטבעות - אחורה.jpeg"], maxQuantity: 1, dimensions: "דמוי לגו בגודל מקורי | נמכר מורכב", pickup: "איסוף מיידי" },
-            { id: 28, room: "שונות", name: "זוג פוסטרים של סרטים ישנים על קנבס", price: 40, images: ["זוג תמונות קנבס.jpeg"], maxQuantity: 1, pickup: "איסוף החל מ-26.10.26" },
-            { id: 29, room: "שונות", name: "ציור Starry Night על קנבס", price: 60, images: ["Starry Night קנבס.jpeg"], maxQuantity: 1, dimensions: "רוחב 67 | אורך 50 סמ", pickup: "איסוף החל מ-26.10.26" },
-            { id: 30, room: "שונות", name: "אורגן קסיו (כולל נרתיק ומעמד לתווים)", price: 150, images: ["אורגן קסיו.jpeg"], maxQuantity: 1, dimensions: "ללא מטען (עובד גם על בטריות)", pickup: "איסוף החל מ-26.10.26" }
+            { id: 28, room: "שונות", name: "זוג פוסטרים של סרטים ישנים על קנבס", price: 40, images: ["זוג תמונות קנבס.jpeg"], maxQuantity: 1, pickup: "איסוף מיידי" },
+            { id: 29, room: "שונות", name: "ציור Starry Night על קנבס", price: 60, images: ["Starry Night קנבס.jpeg"], maxQuantity: 1, dimensions: "רוחב 67 | אורך 50 סמ", pickup: "איסוף מיידי" },
+            { id: 30, room: "שונות", name: "אורגן קסיו (כולל נרתיק ומעמד לתווים)", price: 150, images: ["אורגן קסיו.jpeg"], maxQuantity: 1, dimensions: "ללא מטען (עובד גם על בטריות)", pickup: "איסוף מיידי" }
         ];
 
         let selectedItems = new Map();
